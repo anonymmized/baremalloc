@@ -85,3 +85,51 @@ void free_my(void* ptr) {
     coalecse();
 }
 
+void dump_heap() {
+    printf("Heap map:\n");
+    block_header* cur = heap_start;
+    size_t idx = 0;
+    while (cur) {
+        printf("    block %zu: hdr=%p size%zu free=%d next=%p\n", idx, (void*)cur, cur->size, cur->free, (void*)cur->next);
+        cur = cur->next;
+        idx += 1;
+    }
+    printf("\n");
+}
+
+// Example test
+int main() {
+    heap_init();
+    dump_heap();
+
+    char* a = malloc_my(16);
+    printf("alloc a -> %p\n", (void*)a);
+    dump_heap();
+
+    char* b = malloc_my(100);
+    printf("alloc b -> %p\n", (void*)b);
+    dump_heap();
+
+    free_my(a);
+    printf("free a\n");
+    dump_heap();
+
+    char* c = malloc_my(8);
+    printf("alloc c -> %p\n", (void*)c);
+    dump_heap();
+
+    free_my(b);
+    printf("free b\n");
+    dump_heap();
+
+    free_my(c);
+    printf("free c\n");
+    dump_heap();
+
+    void* big = malloc_my(HEAP_SIZE / 2);
+    printf("alloc big -> %p\n", big);
+    dump_heap();
+
+    free_my(big);
+    return 0;
+}
